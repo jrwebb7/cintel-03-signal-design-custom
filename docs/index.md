@@ -49,6 +49,13 @@ as its throughput indicator.
 The pipeline handles zero-request observations
 without dividing by zero.
 
+## Success-rate experiment
+
+I predicted that success rate would equal one minus error rate for every
+observation with requests. I expected it to be undefined when there were
+no requests. I tested the new signal on the original ten rows and a
+separate zero-request input.
+
 ## Results
 
 The example signals reveal:
