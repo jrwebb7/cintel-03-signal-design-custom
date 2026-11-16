@@ -1,3 +1,6 @@
+# Author: James Webb
+# Date: 2026-11
+
 """utils_system.py.
 
 Shared helper functions

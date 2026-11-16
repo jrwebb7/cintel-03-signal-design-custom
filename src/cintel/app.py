@@ -1,3 +1,6 @@
+# Author: James Webb
+# Date: 2026-11
+
 """app.py - Reactive marimo app for this project.
 
 Marimo adds reactive controls.
