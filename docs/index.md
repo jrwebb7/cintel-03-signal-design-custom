@@ -1,120 +1,33 @@
-# Signal Design for System Monitoring
+# Does reliability vary with request volume?
 
-Continuous Intelligence | Project 03 | Example Report
+James Webb · Continuous Intelligence · November 2026
 
-## Overview
+## Data and question
 
-This project explores how raw operational measurements
-can be transformed into useful monitoring signals.
-
-Individual measurements provide information,
-but derived signals can make system behavior
-easier to interpret and compare.
-
-## Data
-
-The example contains 10 observations of system activity.
-
-Each observation includes:
-
-- `requests` - number of requests handled.
-- `errors` - number of failed requests.
-- `total_latency_ms` - cumulative response time.
-
-[View Example Dataset](https://github.com/jrwebb7/cintel-03-signal-design-custom/blob/main/data/system_metrics.csv)
-
-## Methods
-
-The pipeline creates three monitoring signals.
-
-### Error Rate
-
-Error rate measures the proportion of failed requests.
-
-    error_rate = errors / requests
-
-### Average Latency
-
-Average latency estimates response time per request.
-
-    avg_latency_ms = total_latency_ms / requests
-
-### Throughput
-
-The example uses the number of requests per observation
-as its throughput indicator.
-
-    throughput = requests
-
-The pipeline handles zero-request observations
-without dividing by zero.
+I used the [10 example observations](https://github.com/denisecase/cintel-03-signal-design/blob/main/data/system_metrics.csv) from Denise Case's signal design project to ask whether failure rates differ between observations with lower and higher request counts. Each row gives requests handled, failed requests, and cumulative response time in milliseconds.
 
 ## Success-rate experiment
 
-I predicted that success rate would equal one minus error rate for every
-observation with requests. I expected it to be undefined when there were
-no requests. I tested the new signal on the original ten rows and a
-separate zero-request input.
+I predicted that success rate would equal one minus error rate for observations with requests and would be undefined at zero requests. The new signal divides successful requests by total requests. Across the original 10 rows it ranged from 97.50% to 100%, and success rate plus error rate equaled 1 within floating-point precision. A separate zero-request input produced a null success rate.
 
-## Results
+## Comparing request volumes
 
-The example signals reveal:
+I used Polars to split the positive-volume observations at the median of 115 requests. The lower group includes observations at or below 115. The higher group includes observations above 115. I summed requests, errors, and latency within each group. Dividing those totals by total requests gives rates and latency weighted by requests.
 
-| Signal | Observed Range |
-|---|---|
-| Error rate | 0% to 2.5% |
-| Average latency | 25.0 to 33.71 ms |
-| Requests per observation | 60 to 200 |
+| Group | Observations | Requests | Errors | Error rate | Success rate | Average latency |
+|---|---:|---:|---:|---:|---:|---:|
+| Lower | 5 | 443 | 5 | 1.13% | 98.87% | 29.12 ms |
+| Higher | 5 | 785 | 17 | 2.17% | 97.83% | 30.70 ms |
 
-The output contains the original measurements
-alongside the derived monitoring signals.
+![Error rate of 1.13% for lower volume and 2.17% for higher volume](images/volume-error-rate.svg)
 
-[View Signal Results](https://github.com/jrwebb7/cintel-03-signal-design-custom/blob/main/artifacts/signals.csv)
+## Interpretation and next steps
 
-## Interpretation
+The higher-volume group had about 1.9 times the error rate and 1.58 ms higher average latency. This sample contains ten observations and lacks timestamps and a request-type breakdown. The comparison describes an association in these rows. With more data, I would compare equal-duration intervals and separate request types to see whether the pattern persists.
 
-Error rate provides a useful indicator of reliability,
-while average latency describes responsiveness.
+## Run and inspect the project
 
-Request counts provide additional context about activity.
-
-Together, these signals offer a more informative view
-of system behavior than the raw measurements alone.
-
-## Limitations
-
-The example does not establish acceptable performance
-thresholds or evaluate changes over time.
-
-Request counts are not normalized by elapsed time,
-so they represent throughput only when observation
-intervals are comparable.
-
-## Conclusion
-
-Effective monitoring begins with thoughtful signal design.
-
-Signals should reflect the operational questions
-that the monitoring system is intended to answer.
-
-## Documentation Index
-
-- **Home** - this landing page
-- [**Project Instructions**](project-instructions.md)
-- [**Glossary**](glossary.md)
-- [**API**](api.md)
-- [**Reactive App**](./app/index.html)
-
-## Project Links
-
-- [GitHub Repository](https://github.com/jrwebb7/cintel-03-signal-design-custom)
-- [Example Pipeline](https://github.com/jrwebb7/cintel-03-signal-design-custom/blob/main/src/cintel/signal_design.py)
-- [Results and Artifacts](https://github.com/jrwebb7/cintel-03-signal-design-custom/tree/main/artifacts)
-- [Project Instructions](project-instructions.md)
-
-## Project Resources
-
-- [Project Instructions](project-instructions.md)
-- [Professional Python Guide](https://denisecase.github.io/pro-analytics-02/)
-- [Professional Python Project Explainer](https://pup-pack.github.io/professional-python-project-explainer/).
-- [Suggested Datasets](https://denisecase.github.io/pro-analytics-02/reference/datasets/cintel/)
+- [README and run instructions](https://github.com/jrwebb7/cintel-03-signal-design-custom#run-the-project)
+- [Row-level signals](https://github.com/jrwebb7/cintel-03-signal-design-custom/blob/main/artifacts/signals.csv)
+- [Group comparison CSV](https://github.com/jrwebb7/cintel-03-signal-design-custom/blob/main/artifacts/volume_comparison.csv)
+- [Course workflow guide](https://denisecase.github.io/pro-analytics-02/)

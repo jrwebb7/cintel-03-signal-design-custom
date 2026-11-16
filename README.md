@@ -17,11 +17,9 @@ Author: James Webb
 
 Date: 2026-11
 
-I plan to add a success-rate signal and use it to compare service
-reliability in lower- and higher-volume observations. I will use the
-median request count to define the groups and divide each group's total
-successful requests by its total requests. A success rate is undefined
-when no requests were handled.
+This project compares service reliability across lower and higher request
+volumes. In the ten example observations, the higher-volume group had a
+2.17% error rate versus 1.13% for the lower-volume group.
 
 ## Data
 
@@ -39,6 +37,7 @@ The pipeline uses Polars to calculate derived signals:
 
 - **Error rate** - errors relative to requests.
 - **Average latency** - average response time per request.
+- **Success rate** - successful requests divided by requests, null at zero requests.
 - **Throughput** - request volume represented in the example.
 
 Explore these project components:
@@ -60,6 +59,7 @@ From a VS Code terminal in the project root:
 
 ```shell
 uv run python -m cintel.signal_design
+uv run python -m cintel.compare_volume
 ```
 
 ## Run the Reactive App
@@ -72,6 +72,10 @@ uv run marimo run  src/cintel/app.py
 ```
 
 ## Results
+
+The volume comparison command writes artifacts/volume_comparison.csv.
+See the [project report](docs/index.md) for the median split, chart,
+interpretation, and limitations.
 
 The pipeline adds calculated signals to the input measurements
 and writes `artifacts/signals.csv`.
