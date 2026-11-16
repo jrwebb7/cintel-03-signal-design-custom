@@ -118,7 +118,9 @@ def main() -> None:
 
     signals_df: pl.DataFrame = design_signals(df)
 
-    LOG.info("Created signal columns: error_rate, avg_latency_ms, throughput")
+    LOG.info(
+        "Created signal columns: error_rate, avg_latency_ms, success_rate, throughput"
+    )
     LOG.info(f"Enhanced signals table has {signals_df.height} rows")
 
     # ----------------------------------------------------
